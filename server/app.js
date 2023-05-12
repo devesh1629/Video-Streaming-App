@@ -2,7 +2,21 @@ const express = require('express');
 const fs = require('fs');
 // const thumbsupply = require('thumbsupply');
 const cors  = require('cors');
+const multer = require('multer');
 const app = express();
+app.use(cors());
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './assets/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname)
+  }
+});
+
+const upload = multer({ storage: storage });
+
 
 const videos = [
   {
@@ -27,6 +41,12 @@ app.use(cors());
 // endpoint to fetch all videos metadata
 app.get('/videos', function(req, res) {
   res.json(videos);
+});
+
+app.post('/upload', upload.single('file'), function (req, res, next) {
+  // req.file contains information about the uploaded file
+  
+  res.send('File uploaded successfully');
 });
 
 // endpoint to fetch a single video's metadata
